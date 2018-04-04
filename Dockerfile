@@ -113,14 +113,11 @@ RUN set -ex \
 # Monero
 ENV MONERO_VERSION=0.11.1.0
 ENV MONERO_HASH=793bc973746a10883adb2f89827e223f562b9651
-COPY easylogging.patch /tmp/easylogging.patch
 ARG NPROC
 RUN set -ex \
 	&& git clone --depth 1 -b v${MONERO_VERSION} https://github.com/monero-project/monero.git /src \
 	&& cd /src \
 	&& test `git rev-parse HEAD` = ${MONERO_HASH} || exit 1 \
-	&& patch -p1 < /tmp/easylogging.patch \
-	&& rm -f /tmp/easylogging.patch \
 	&& if [ -z "$NPROC" ] ; \
 		then nice -n 19 ionice -c2 -n7 make -j$(nproc) release-static ; \
 		else nice -n 19 ionice -c2 -n7 make -j$NPROC release-static ; \
